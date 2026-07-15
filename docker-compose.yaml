@@ -4,7 +4,7 @@ service :
     container_name: 69-s1-db
     ports:
      - 54327:5432
-  environments:
+  environment:
      - POSTGRES_PASSWORD=2310
      - POSTGRES_USER=porramee
      - POSTGRES_DB=porramee
