@@ -5,20 +5,17 @@ services:
     ports:
       - "54327:5432"
     environment:
-      POSTGRES_PASSWORD: "2310"
-      POSTGRES_USER: "porramee"
-      POSTGRES_DB: "porramee"
+      - POSTGRES_PASSWORD=2310
+      - POSTGRES_USER=porramee
+      - POSTGRES_DB=porramee
     volumes:
       - ./data:/var/lib/postgresql/data
 
-admin:
-    image: admin
-    container_name: 69-s1-admin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: 69-s1-pgadmin
     ports:
-      - "8080:8080"
+      - "8080:80"
     environment:
-      POSTGRES_PASSWORD: "1234@"
-      POSTGRES_USER: "admin"
-      POSTGRES_DB: "admin"
-    volumes:
-      - ./data:/var/lib/postgresql/data
+      - PGADMIN_DEFAULT_EMAIL=backkingbar10@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=231046@Back
