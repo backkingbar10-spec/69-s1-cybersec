@@ -19,3 +19,5 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=backkingbar10@gmail.com
       - PGADMIN_DEFAULT_PASSWORD=231046@Back
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
