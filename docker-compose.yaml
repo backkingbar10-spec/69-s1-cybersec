@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: 69-s1-db
+    ports:
+      - "54327:5432"
+    environment:
+      - POSTGRES_PASSWORD=2310
+      - POSTGRES_USER=porramee
+      - POSTGRES_DB=porramee
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: 69-s1-pgadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=backkingbar10@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=231046@Back
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
