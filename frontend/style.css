@@ -1,0 +1,149 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    padding: 20px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 420px;
+    margin: 0 auto;
+    color: #fff;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input:focus {
+    border-color: #7c5cfc;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #7c5cfc, #5b3fd4);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn.logout {
+    background: linear-gradient(135deg, #fc5c7c, #d43f5b);
+    margin-top: 20px;
+}
+
+.role-btn {
+    margin-bottom: 14px;
+}
+
+.role-btn.user {
+    background: linear-gradient(135deg, #5bd1a8, #3fb48f);
+}
+
+.error {
+    color: #ff6b6b;
+    margin-top: 14px;
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+}
+
+.success {
+    color: #5bd1a8;
+    margin-top: 14px;
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+}
+
+.link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.link a {
+    color: #7c5cfc;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
+
+.profile-info p {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 15px;
+}
+
+.profile-info strong {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.hidden {
+    display: none;
+}

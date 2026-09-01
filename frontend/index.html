@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST Demo - Admin & User - 69 S1 Cybersec</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Role Selection Page -->
+    <div id="role-page" class="container">
+        <div class="card">
+            <h1>Choose Role</h1>
+            <p class="subtitle">Select the role you want to sign in as.</p>
+            <button class="btn role-btn" id="choose-admin">Admin</button>
+            <button class="btn role-btn user" id="choose-user">User</button>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login-page" class="container hidden">
+        <div class="card">
+            <h1>Sign In as <span id="login-role-label">User</span></h1>
+            <p class="subtitle">Welcome back! Please login to your account.</p>
+            <form id="login-form">
+                <div class="form-group" id="login-email-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter email" required>
+                </div>
+                <div class="form-group hidden" id="login-identifier-group">
+                    <label for="login-identifier">Email or Username</label>
+                    <input type="text" id="login-identifier" placeholder="Enter email or username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <div id="login-error" class="error"></div>
+            </form>
+            <p class="link">Don't have an account? <a href="#" id="show-register">Register</a></p>
+            <p class="link">Forgot password? <a href="#" id="show-forgot">Reset password</a></p>
+            <p class="link">Switch role? <a href="#" id="show-role">Change role</a></p>
+        </div>
+    </div>
+
+    <!-- Register Page -->
+    <div id="register-page" class="container hidden">
+        <div class="card">
+            <h1>Register as <span id="reg-role-label">User</span></h1>
+            <p class="subtitle">Create a new account.</p>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" placeholder="Enter email" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" placeholder="Enter password" required>
+                </div>
+                <div class="form-group hidden" id="reg-confirm-group">
+                    <label for="reg-confirm">Confirm Password</label>
+                    <input type="password" id="reg-confirm" placeholder="Confirm password">
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <div id="register-error" class="error"></div>
+            </form>
+            <p class="link">Already have an account? <a href="#" id="show-login">Login</a></p>
+        </div>
+    </div>
+
+    <!-- Forgot Password Page -->
+    <div id="forgot-page" class="container hidden">
+        <div class="card">
+            <h1>Forgot Password (<span id="forgot-role-label">User</span>)</h1>
+            <p class="subtitle">Enter your email to receive a password reset link.</p>
+            <form id="forgot-form">
+                <div class="form-group">
+                    <label for="forgot-email">Email</label>
+                    <input type="email" id="forgot-email" placeholder="Enter email" required>
+                </div>
+                <button type="submit" class="btn">Send Reset Link</button>
+                <div id="forgot-error" class="error"></div>
+                <div id="forgot-success" class="success"></div>
+            </form>
+            <p class="link"><a href="#" id="back-to-login">Back to Login</a></p>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile-page" class="container hidden">
+        <div class="card">
+            <h1>Profile (<span id="p-role"></span>)</h1>
+            <div class="profile-info">
+                <p><strong>ID:</strong> <span id="p-id"></span></p>
+                <p><strong>Username:</strong> <span id="p-username"></span></p>
+                <p><strong>Email:</strong> <span id="p-email"></span></p>
+            </div>
+            <button class="btn logout" id="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

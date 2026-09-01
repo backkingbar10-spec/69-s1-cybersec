@@ -1,9 +1,9 @@
-version: '3.8'
+version: '...'
 
 services:
  db:
    image: postgres:16-alpine
-   container_name: 69-s2-db
+   container_name: 69-s1-db
    ports:
      - "5432:5432"
    environment:
@@ -15,10 +15,9 @@ services:
 
  admin:
    image: dpage/pgadmin4
-   container_name: 69-s2-admin
+   container_name: 69-s1-admin
    ports:
      - "8081:80"
-
    environment:
      - PGADMIN_DEFAULT_EMAIL=${PG_EMAIL}
      - PGADMIN_DEFAULT_PASSWORD=${PG_PASS}
@@ -29,9 +28,9 @@ services:
 
  app:
    image: prawee/strapi
-   container_name: 69-s2-app
+   container_name: 69-s1-app
    ports:
-     - "9092:1337"
+     - "9091:1337"
    environment:
      - DATABASE_CLIENT=postgres
      - DATABASE_HOST=db
@@ -47,3 +46,13 @@ services:
      - TRANSFER_TOKEN_SALT=${APP_TRANSFER_TOKEN_SALT}
    depends_on:
      - db
+
+ frontend:
+   image: nginx:alpine
+   container_name: 69-s1-frontend
+   ports:
+     - "3000:80"
+   volumes:
+     - ./frontend:/usr/share/nginx/html
+   depends_on:
+     - app

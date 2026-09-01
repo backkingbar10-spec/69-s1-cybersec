@@ -1,0 +1,69 @@
+### Login (แอดมิน)
+POST http://localhost:9091/admin/login
+Content-Type: application/json
+
+{
+    "email": "backkingbar10@gmail.com",
+    "password": "231046@Back",
+    "rememberMe": false
+}
+
+
+### Forgot Password
+POST http://localhost:9091/admin/forgot-password
+Content-Type: application/json
+
+{
+    "email": "porramee-s@rmutp.ac.th"
+}
+
+### Register / Signup (สมัครสมาชิก)
+POST http://localhost:9091/admin/register
+Content-Type: application/json
+
+{
+    "username": "Porramee-S",
+    "email": "porramee-s@rmutp.ac.th",
+    "password": "231046@Back"
+}
+
+
+### Profile (ดูข้อมูลส่วนตัว)  — อัปเดต Token ใหม่ทุกครั้งหลัง Login
+# 1. รัน Admin Login ด้านบนก่อน เพื่อรับ token ใหม่
+# 2. นำ token มาวางแทน <your-admin-jwt-token> ด้านล่าง
+GET http://localhost:9091/admin/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzg4MjU5NzM5LCJleHAiOjE3OTA4NTE3Mzl9.RwFCTXKjSoW8l3AuMTyuAtY1AiZM4SrfTpZiUgOqk1I
+
+### User Login (เข้าสู่ระบบสมาชิก)
+POST http://localhost:9091/api/auth/local
+Content-Type: application/json
+
+{
+    "identifier": "porramee-s@rmutp.ac.th",
+    "password": "231046@Back"
+}
+
+### User Register / Signup (สมัครสมาชิก)
+POST http://localhost:9091/api/auth/local/register
+Content-Type: application/json
+
+{
+    "username": "Porramee-S",
+    "email": "porramee-s@rmutp.ac.th",
+    "password": "231046@Back"
+}
+
+
+### User Profile (ข้อมูลส่วนตัวสมาชิก)  — อัปเดต Token ใหม่ทุกครั้งหลัง Login
+# 1. รัน User Login ด้านบนก่อน เพื่อรับ jwt ใหม่
+# 2. นำ jwt มาวางแทน <your-user-jwt-token> ด้านล่าง
+GET http://localhost:9091/api/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzg4MjU5NzQwLCJleHAiOjE3OTA4NTE3NDB9.5Vqsv_c1TPG5w5iAnEZ6ZFX5bJH2lBkeJShtZwmgobo
+
+### User Forgot Password (ลืมรหัสผ่านสมาชิก)
+POST http://localhost:9091/api/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "porramee-s@rmutp.ac.th"
+}
