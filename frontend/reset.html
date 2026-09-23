@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - 69 S1 Cybersec</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="reset-page" class="container">
+        <div class="card">
+            <h1>Reset Password</h1>
+            <p class="subtitle">Choose a new password for your <span id="reset-role-label">User</span> account.</p>
+
+            <div class="form-group">
+                <label>Account Type</label>
+                <button class="btn role-btn" id="reset-choose-admin">Admin</button>
+                <button class="btn role-btn user" id="reset-choose-user">User</button>
+            </div>
+
+            <form id="reset-form">
+                <div class="form-group">
+                    <label for="reset-password">New Password</label>
+                    <input type="password" id="reset-password" placeholder="Enter new password" required>
+                </div>
+                <div class="form-group">
+                    <label for="reset-confirm">Confirm Password</label>
+                    <input type="password" id="reset-confirm" placeholder="Confirm new password" required>
+                </div>
+                <button type="submit" class="btn">Reset Password</button>
+                <div id="reset-error" class="error"></div>
+                <div id="reset-success" class="success"></div>
+            </form>
+            <p class="link"><a href="index.html">Back to Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:9091";
+
+        let resetRole = "user";
+
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+
+        const form = document.getElementById("reset-form");
+        const resetError = document.getElementById("reset-error");
+        const resetSuccess = document.getElementById("reset-success");
+        const resetRoleLabel = document.getElementById("reset-role-label");
+
+        function setResetRole(role) {
+            resetRole = role;
+            resetRoleLabel.textContent = role === "admin" ? "Admin" : "User";
+        }
+
+        document.getElementById("reset-choose-admin").addEventListener("click", () => setResetRole("admin"));
+        document.getElementById("reset-choose-user").addEventListener("click", () => setResetRole("user"));
+
+        if (!code) {
+            resetError.textContent = "Missing reset code. Please use the link from your email.";
+            form.querySelector("button").disabled = true;
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            resetError.textContent = "";
+            resetSuccess.textContent = "";
+
+            const password = document.getElementById("reset-password").value;
+            const passwordConfirmation = document.getElementById("reset-confirm").value;
+
+            if (password !== passwordConfirmation) {
+                resetError.textContent = "Passwords do not match.";
+                return;
+            }
+
+            let url, payload;
+            if (resetRole === "admin") {
+                url = `${API_URL}/admin/reset-password`;
+                payload = { resetPasswordToken: code, password };
+            } else {
+                url = `${API_URL}/api/auth/reset-password`;
+                payload = { code, password, passwordConfirmation };
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                const body = await res.json();
+
+                if (!res.ok) {
+                    resetError.textContent = (body.data && body.data.error && body.data.error.message) ||
+                        body.error?.message || "Failed to reset password";
+                    return;
+                }
+
+                resetSuccess.textContent = "Password reset successfully! You can now login.";
+                form.reset();
+            } catch (err) {
+                resetError.textContent = "Cannot connect to server";
+            }
+        });
+    </script>
+</body>
+</html>
