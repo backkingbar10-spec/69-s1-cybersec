@@ -1,0 +1,249 @@
+# API
+
+## 1.Admin
+
+### 1.1 Login
+POST http://localhost:9091/admin/login
+Content-Type: application/json
+
+{
+    "email": "{{$dotenv ADMIN_EMAIL}}",
+    "password": "{{$dotenv ADMIN_PASSWORD}}",
+    "rememberMe": false
+}
+
+### 1.2 Signup
+// ใช้ได้เฉพาะตอนที่ยังไม่มี Super Admin (ครั้งแรกหลัง setup เท่านั้น)
+POST http://localhost:9091/admin/register-admin
+Content-Type: application/json
+
+{
+    "firstname": "",
+    "lastname": "",
+    "email": "",
+    "password": ""
+}
+
+### 1.3 Forgot Password
+POST http://localhost:9091/admin/forgot-password
+Content-Type: application/json
+
+{
+    "email": "{{$dotenv ADMIN_EMAIL}}"
+}
+
+### 1.3.1 Reset Password
+// resetPasswordToken ได้จากอีเมล/response ของข้อ 1.3 (Forgot Password)
+POST http://localhost:9091/admin/reset-password
+Content-Type: application/json
+
+{
+    "resetPasswordToken": "<resetPasswordToken>",
+    "password": "{{$dotenv ADMIN_PASSWORD}}"
+}
+
+### 1.4 Profile
+// เอา token จาก response ของข้อ 1.1 ไปใส่ใน Authorization
+GET http://localhost:9091/admin/users/me
+Authorization: Bearer <token_from_1.1>
+
+## 2.User
+
+### 2.1 Login
+POST http://localhost:9091/api/auth/local
+Content-Type: application/json
+
+{
+    "identifier": "{{$dotenv USER_EMAIL}}",
+    "password": "{{$dotenv USER_PASSWORD}}"
+}
+
+### 2.2 Signup
+POST http://localhost:9091/api/auth/local/register
+Content-Type: application/json
+
+{
+    "username": "",
+    "email": "",
+    "password": ""
+}
+
+### 2.3 Forgot Password
+// Strapi จะคืน 500 ถ้ายังไม่ได้ตั้งค่า SMTP สำหรับส่งอีเมล
+POST http://localhost:9091/api/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "{{$dotenv USER_EMAIL}}"
+}
+
+### 2.3.1 Reset Password
+// code ได้จากอีเมล/response ของข้อ 2.3 (Forgot Password) ต้องใช้ร่วมกับ SMTP
+POST http://localhost:9091/api/auth/reset-password
+Content-Type: application/json
+
+{
+    "code": "",
+    "password": "{{$dotenv USER_PASSWORD}}",
+    "passwordConfirmation": "{{$dotenv USER_PASSWORD}}"
+}
+
+### 2.4 Profile
+// เอา token จาก response ของข้อ 2.1 ไปใส่ใน Authorization
+GET http://localhost:9091/api/users/me
+Authorization: Bearer <token_from_2.1>
+
+## 3. Content
+// Content API ต้องใช้ USER token — admin token (ข้อ 1.1) จะได้ 401
+//
+// ⚠ วิธีใช้: ยิง "3.0 Login" ก่อนเสมอ 1 ครั้ง แล้วทุกข้อในหมวด 3 จะใช้ token ที่ดึงมาอัตโนมัติ
+//   ไม่ต้อง paste token เอง ไม่หมดอายุ (token อายุ 30 วัน แต่ดึงใหม่ทุกครั้งที่ login)
+//   และไม่มี token จริงติดอยู่ในไฟล์ (ปลอดภัยกว่าเก็บ token ไว้ในไฟล์ที่ commit ขึ้น git)
+//
+// ⚠ ต้องใช้ REST Client (humao.rest-client) หรือ IntelliJ HTTP Client ถึงจะดึง token อัตโนมัติได้
+
+### 3.0 Login (ต้องยิงข้อนี้ก่อนทุกครั้ง)
+# @name userLogin
+POST http://localhost:9091/api/auth/local
+Content-Type: application/json
+
+{
+    "identifier": "{{$dotenv USER_EMAIL}}",
+    "password": "{{$dotenv USER_PASSWORD}}"
+}
+
+### 3.0.1 ตัวแปรที่ใช้ทั้งหมวด 3
+// userToken — ดึงจาก response ของข้อ 3.0 อัตโนมัติ ไม่ต้องแก้เอง (เก็บใน .env ไม่ได้ เพราะ token เปลี่ยนทุกครั้งที่ login)
+// studentId / subjectId / teacherId / mappingId — ย้ายไปไว้ในไฟล์ .env แล้ว
+//   ดู id จริงได้จากข้อ 3.1.2 / 3.2.2 / 3.3.2 / 3.4.2 แล้วแก้ค่าที่ .env ที่เดียว ทั้งหมวด 3 จะอัปเดตตามหมดอัตโนมัติ
+@userToken = {{userLogin.response.body.$.jwt}}
+@studentId = {{$dotenv STUDENT_ID}}
+@subjectId = {{$dotenv SUBJECT_ID}}
+@teacherId = {{$dotenv TEACHER_ID}}
+@mappingId = {{$dotenv MAPPING_ID}}
+
+### 3.1 Student
+// schema: name (required), mobile (required, 10 หลัก), cardId (required, unique, 13 หลัก)
+//
+// ⚠ ช่อง mobile ถูก hash ด้วย md5 ใน beforeCreate เสมอ
+//   ส่ง "0812345677" แต่ที่ได้กลับมาเป็น hash 32 หลัก เช่น "f7f1e6f1..."
+// ⚠ unique ของ mobile ใช้ไม่ได้จริง เพราะค่าที่ validate ถูก hash ไปแล้ว จึงไม่เทียบซ้ำ
+//   ลองสร้าง mobile เดิมซ้ำได้ ต้องควบคุมกันเอง
+// ⚠ cardId unique จริง → ถ้ายิง 3.1.1 ซ้ำจะได้ 400 (body ว่าง) ต้องเปลี่ยน cardId ทุกครั้งที่สร้าง
+
+#### 3.1.1 Create
+POST http://localhost:9091/api/students
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "data": {
+        "name": "จิตสม ดีใจ",
+        "mobile": "0812345677",
+        "cardId": "1103701234568"
+    }
+}
+
+#### 3.1.2 List All
+GET http://localhost:9091/api/students
+Authorization: Bearer {{userToken}}
+
+#### 3.1.3 List with ID
+GET http://localhost:9091/api/students/{{studentId}}
+Authorization: Bearer {{userToken}}
+
+#### 3.1.4 Update
+PUT http://localhost:9091/api/students/{{studentId}}
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "data": {
+        "name": "ชื่อใหม่"
+    }
+}
+
+#### 3.1.5 Delete
+DELETE http://localhost:9091/api/students/{{studentId}}
+Authorization: Bearer {{userToken}}
+
+### 3.2 Subject
+// schema: name (required, unique)
+//
+// ⚠ unique ของ name ใช้ได้จริง → ยิง 3.2.1 ซ้ำด้วยชื่อเดิมจะได้ 400
+// ⚠ ช่อง name เป็น required แต่ Strapi 4 ไม่ validate ค่าว่าง → ส่ง "" จะผ่านและสร้างข้อมูลขยะจริง ต้องใส่ค่าเอง
+
+#### 3.2.1 Create
+POST http://localhost:9091/api/subjects
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "data": {
+        "name": "Cyber Security"
+    }
+}
+
+#### 3.2.2 List All
+GET http://localhost:9091/api/subjects
+Authorization: Bearer {{userToken}}
+
+#### 3.2.3 List with ID
+GET http://localhost:9091/api/subjects/{{subjectId}}
+Authorization: Bearer {{userToken}}
+
+#### 3.2.4 Update
+PUT http://localhost:9091/api/subjects/{{subjectId}}
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "data": {
+        "name": "ชื่อวิชาใหม่"
+    }
+}
+
+#### 3.2.5 Delete
+DELETE http://localhost:9091/api/subjects/{{subjectId}}
+Authorization: Bearer {{userToken}}
+
+### 3.3 Teacher
+// schema: name (required), mappings (relation oneToMany -> mapping)
+//
+// ⚠ teacher ไม่ได้มีแค่ name — ยังมี relation ชื่อ mappings เชื่อมไปยัง mapping (ดูข้อ 3.4)
+// ⚠ name ของ teacher ไม่ unique (ต่างจาก subject) → สร้างชื่อซ้ำได้
+
+#### 3.3.1 Create
+POST http://localhost:9091/api/teachers
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "data": {
+        "name": "ชื่ออาจารย์"
+    }
+}
+
+#### 3.3.2 List All
+GET http://localhost:9091/api/teachers
+Authorization: Bearer {{userToken}}
+
+#### 3.3.3 List with ID
+GET http://localhost:9091/api/teachers/{{teacherId}}
+Authorization: Bearer {{userToken}}
+
+#### 3.3.4 Update
+PUT http://localhost:9091/api/teachers/{{teacherId}}
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+    "data": {
+        "name": "ชื่ออาจารย์ใหม่"
+    }
+}
+
+#### 3.3.5 Delete
+DELETE http://localhost:9091/api/teachers/{{teacherId}}
+Authorization: Bearer {{userToken}}
+
